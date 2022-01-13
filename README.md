@@ -33,7 +33,13 @@ Hints: для этого используй функцию find и HTML-код �
 ```
 
 Решение
+<<<<<<< HEAD
 --------------
+=======
+-----
+
+Файл - ```main.py```
+>>>>>>> 076d92ebbc23ce942e6cc0a9e02f429968abcff2
 
 Файл - ``main.py``
 
@@ -68,15 +74,21 @@ logging.basicConfig(
 if __name__ == '__main__':
     main()
 ```
+<<<<<<< HEAD
 
 4. Для начала логгируем запуск приложения, создаем переменную ``url`` с динамической переменной page для сбора данных вместе с пагинацией, а также переменную ``data`` для сохранения информации. ``USER_AGENT`` служит для обхода блокировок во время парсинга.
 
 ```python
+=======
+4. Для начала логгируем запуск приложения, создаем переменную ```url``` с динамической переменной page для сбора данных вместе с пагинацией, а также переменную ```data``` для сохранения информации. ```USER_AGENT``` служит для обхода блокировок во время парсинга.
+``` python
+>>>>>>> 076d92ebbc23ce942e6cc0a9e02f429968abcff2
 logging.debug('Applications has been successfully launched.')
 USER_AGENT = {'User-agent': 'Mozilla/5.0'}
 url = 'https://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString=&morphology=on&search-filter=Дате+размещения&pageNumber={page}&sortDirection=false&recordsPerPage=_10&showLotsInfoHidden=false&savedSearchSettingsIdHidden=&sortBy=UPDATE_DATE&fz44=on&fz223=on&af=on&ca=on&pc=on&pa=on&placingWayList=&selectedLaws=&priceFromGeneral=&priceFromGWS=&priceFromUnitGWS=&priceToGeneral=&priceToGWS=&priceToUnitGWS=&currencyIdGeneral=-1&publishDateFrom=&publishDateTo=&applSubmissionCloseDateFrom=&applSubmissionCloseDateTo=&customerIdOrg=&customerFz94id=&customerTitle=&okpd2Ids=&okpd2IdsCodes=&gws='  # noqa
 data = {}
 ```
+<<<<<<< HEAD
 
 5. Используя библиотеку ``requests``, отправляем get запрос на сайт и проверяем, что статус-код - 200, что дает нам уверенность в работе сайта
 
@@ -85,6 +97,14 @@ response = requests.get(url=url.format(page='1'),
                             headers=USER_AGENT,
                             timeout=10)
 
+=======
+5. Используя библиотеку ```requests```, отправляем get запрос на сайт и проверяем, что статус-код - 200, что дает нам уверенность в работе сайта
+``` python
+response = requests.get(url=url.format(page='1'),
+                            headers=USER_AGENT,
+                            timeout=10)
+
+>>>>>>> 076d92ebbc23ce942e6cc0a9e02f429968abcff2
 # Check response code
 if not response.ok:
     logging.error('Status code is not equal 200 — problem in loading site')
@@ -92,10 +112,15 @@ if not response.ok:
         'Status code is not equal 200 — problem in loading site'
     )
 ```
+<<<<<<< HEAD
 
 6. Используя библиотеку ``BeautifulSoup``, при помощи цикла на каждой итерации находим блок ``registry-entry__header-mid__number``, который содержит номера закупок, а также ``price-block__value``, который содержит стоимость закупки. В конце итерации сохраняем полученные данные.
 
 ```python
+=======
+6. Используя библиотеку ```BeautifulSoup```, при помощи цикла на каждой итерации находим блок ```registry-entry__header-mid__number```, который содержит номера закупок, а также ```price-block__value```, который содержит стоимость закупки. В конце итерации сохраняем полученные данные.
+``` python
+>>>>>>> 076d92ebbc23ce942e6cc0a9e02f429968abcff2
 # Iteration for saving data
 for page in range(2, 101):
     response = requests.get(
@@ -147,8 +172,14 @@ df = pd.DataFrame(
 df.to_excel('cards.xlsx')
 ```
 
+<<<<<<< HEAD
 Задание 2. Напиши юнит-тест для проверки своей программы
 ------------------------------------------------------------------------------------------------------
+=======
+
+Задание 2. Напиши юнит-тест для проверки своей программы
+---
+>>>>>>> 076d92ebbc23ce942e6cc0a9e02f429968abcff2
 
 Чуть позже ты получил письмо от руководителя с новым заданием. Подход
 TDD (разработка через тестирование) хорошо подходит для
@@ -183,6 +214,7 @@ end-to-end тесты. Обычно при разработке программ
 ```
 
 Решение
+<<<<<<< HEAD
 --------------
 
 Файл - ``test.py``
@@ -190,15 +222,28 @@ end-to-end тесты. Обычно при разработке программ
 1. Импортируем нужные библиотеки
 
 ```python
+=======
+-----
+
+Файл - ```test.py```
+
+1. Импортируем нужные библиотеки
+``` python
+>>>>>>> 076d92ebbc23ce942e6cc0a9e02f429968abcff2
 import unittest
 
 import requests
 from bs4 import BeautifulSoup as bs
 ```
 
+<<<<<<< HEAD
 2. Создаем дочерний класс ``TestParsing`` от класса ``unittest.TestCase``, также константы USER_AGENT и URL
 
 ```python
+=======
+2. Создаем дочерний класс ```TestParsing``` от класса ```unittest.TestCase```, также константы USER_AGENT и URL
+``` python
+>>>>>>> 076d92ebbc23ce942e6cc0a9e02f429968abcff2
 class TestParsing(unittest.TestCase):
     USER_AGENT = {'User-agent': 'Mozilla/5.0'}
     URL = 'https://zakupki.gov.ru/epz/order/extendedsearch/results.html'
@@ -212,18 +257,28 @@ class TestParsing(unittest.TestCase):
     'nCloseDateFrom=&applSubmissionCloseDateTo=&customerIdOrg=&custome'
     'rFz94id=&customerTitle=&okpd2Ids=&okpd2IdsCodes=&gws='
 ```
+<<<<<<< HEAD
 
 3. Внутри класса ``TestParsing`` создаем тест-фукнцию для проверки статус кода
 
 ```python
+=======
+3. Внутри класса ```TestParsing``` создаем тест-фукнцию для проверки статус кода
+``` python
+>>>>>>> 076d92ebbc23ce942e6cc0a9e02f429968abcff2
 def test_status_code(self):
         response = requests.get(self.URL, headers=self.USER_AGENT)
         self.assertEqual(response.status_code, 200)
 ```
+<<<<<<< HEAD
 
 4. Внутри класса ``TestParsing`` создаем тест-функцию для проверки наличия записей
 
 ```python
+=======
+4. Внутри класса ```TestParsing``` создаем тест-функцию для проверки наличия записей
+``` python
+>>>>>>> 076d92ebbc23ce942e6cc0a9e02f429968abcff2
 def test_records(self):
     response = requests.get(self.URL, headers=self.USER_AGENT)
     soup = bs(response.text, 'html.parser')
