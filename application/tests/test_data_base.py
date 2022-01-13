@@ -1,5 +1,5 @@
-import unittest
 import sqlite3
+import unittest
 
 
 class TestDataBase(unittest.TestCase):

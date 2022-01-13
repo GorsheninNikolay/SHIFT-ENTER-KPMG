@@ -3,7 +3,6 @@ import sqlite3
 
 import pandas as pd
 
-
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - '
            '%(funcName)s: %(lineno)d - %(message)s',
