@@ -327,3 +327,26 @@ CURSOR.close()
 
 Решение. Тест базы данных
 -----
+
+Файл - ```test_data_base.py```
+
+1. Импортируем нужные библиотеки
+``` python
+import sqlite3
+import unittest
+```
+
+2. Создаем класс ```TestDataBase```, внутри класса прописываем константы ```CONN``` и ```CURSOR```, а также функцию тестирования данных
+``` python
+class TestDataBase(unittest.TestCase):
+
+    CONN = sqlite3.connect(r'data/cards.db')  # Connect to DataBase
+    CURSOR = CONN.cursor()  # Create cursor
+
+    def test_records(self):
+        self.CURSOR.execute('SELECT * FROM cards')
+        self.assertGreater(len(self.CURSOR.fetchmany(3)), 0)
+```
+
+
+# Готово! :blush:
