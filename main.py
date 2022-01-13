@@ -64,12 +64,12 @@ def main() -> None:
 
     df = pd.DataFrame(
         {
-            '№': [num for num in data.keys()],
-            'Price': [price for price in data.values()]
+            'Number': [int(num) for num in data.keys()],
+            'Amount': [price for price in data.values()]
         }
     )
 
-    df.to_excel('purchases.xlsx')
+    df.to_excel('cards.xlsx')
 
 
 if __name__ == '__main__':
