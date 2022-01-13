@@ -1,4 +1,4 @@
-> # SHIFT-ENTER-KPMG
+# SHIFT-ENTER-KPMG
 
 ### Направление «Python-разработчик», KPMG
 
@@ -32,9 +32,10 @@ Hints: для этого используй функцию find и HTML-код �
 До связи!
 ```
 
-Решение:
+Решение
+--------------
 
-Основной файл - ``main.py``
+Файл - ``main.py``
 
 Документация по коду:
 
@@ -56,8 +57,8 @@ class WrongResponse(Exception):
 
 
 logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - "
-           "%(funcName)s: %(lineno)d - %(message)s",
+    format='%(asctime)s - %(levelname)s - '
+           '%(funcName)s: %(lineno)d - %(message)s',
     level=logging.DEBUG)
 ```
 
@@ -68,19 +69,23 @@ if __name__ == '__main__':
     main()
 ```
 
-4. Для начала логгируем запуск приложения, создаем переменную ``url`` с динамической переменной page для сбора данных вместе с пагинацией, а также переменную ``data`` для сохранения информации
+4. Для начала логгируем запуск приложения, создаем переменную ``url`` с динамической переменной page для сбора данных вместе с пагинацией, а также переменную ``data`` для сохранения информации. ``USER_AGENT`` служит для обхода блокировок во время парсинга.
 
 ```python
 logging.debug('Applications has been successfully launched.')
-url = 'https://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString=&morphology=on&search-filter=Дате+размещения&pageNumber={page}&sortDirection=false&recordsPerPage=_10&showLotsInfoHidden=false&savedSearchSettingsIdHidden=&sortBy=UPDATE_DATE&fz44=on&fz223=on&af=on&ca=on&pc=on&pa=on&placingWayList=&selectedLaws=&priceFromGeneral=&priceFromGWS=&priceFromUnitGWS=&priceToGeneral=&priceToGWS=&priceToUnitGWS=&currencyIdGeneral=-1&publishDateFrom=&publishDateTo=&applSubmissionCloseDateFrom=&applSubmissionCloseDateTo=&customerIdOrg=&customerFz94id=&customerTitle=&okpd2Ids=&okpd2IdsCodes=&gws='
+USER_AGENT = {'User-agent': 'Mozilla/5.0'}
+url = 'https://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString=&morphology=on&search-filter=Дате+размещения&pageNumber={page}&sortDirection=false&recordsPerPage=_10&showLotsInfoHidden=false&savedSearchSettingsIdHidden=&sortBy=UPDATE_DATE&fz44=on&fz223=on&af=on&ca=on&pc=on&pa=on&placingWayList=&selectedLaws=&priceFromGeneral=&priceFromGWS=&priceFromUnitGWS=&priceToGeneral=&priceToGWS=&priceToUnitGWS=&currencyIdGeneral=-1&publishDateFrom=&publishDateTo=&applSubmissionCloseDateFrom=&applSubmissionCloseDateTo=&customerIdOrg=&customerFz94id=&customerTitle=&okpd2Ids=&okpd2IdsCodes=&gws='  # noqa
 data = {}
 ```
 
 5. Используя библиотеку ``requests``, отправляем get запрос на сайт и проверяем, что статус-код - 200, что дает нам уверенность в работе сайта
 
 ```python
-response = requests.get(url=url.format(page='1'), timeout=20)
+response = requests.get(url=url.format(page='1'),
+                            headers=USER_AGENT,
+                            timeout=10)
 
+# Check response code
 if not response.ok:
     logging.error('Status code is not equal 200 — problem in loading site')
     raise WrongResponse(
@@ -91,20 +96,23 @@ if not response.ok:
 6. Используя библиотеку ``BeautifulSoup``, при помощи цикла на каждой итерации находим блок ``registry-entry__header-mid__number``, который содержит номера закупок, а также ``price-block__value``, который содержит стоимость закупки. В конце итерации сохраняем полученные данные.
 
 ```python
+# Iteration for saving data
 for page in range(2, 101):
     response = requests.get(
-        url=url.format(page=str(page)), timeout=20
+        url=url.format(page=str(page)),
+        headers=USER_AGENT,
+        timeout=10
     )
     soup = bs(response.text, 'html.parser')
 
-    block_numbers = soup.find_all(
+    blocks_numbers = soup.find_all(
         'div',
         class_='registry-entry__header-mid__number'
     )
 
     blocks_prices = soup.find_all('div', class_='price-block__value')
 
-    for x, y in zip(block_numbers, blocks_prices):
+    for x, y in zip(blocks_numbers, blocks_prices):
         data[x.text.strip().split()[-1]] = convert_price(y.text.strip())
 ```
 
@@ -139,7 +147,8 @@ df = pd.DataFrame(
 df.to_excel('cards.xlsx')
 ```
 
-# Задание 2. Напиши юнит-тест для проверки своей программы
+Задание 2. Напиши юнит-тест для проверки своей программы
+------------------------------------------------------------------------------------------------------
 
 Чуть позже ты получил письмо от руководителя с новым заданием. Подход
 TDD (разработка через тестирование) хорошо подходит для
@@ -171,4 +180,60 @@ end-to-end тесты. Обычно при разработке программ
 3. Провести еще одну проверку на успешность, используя assertIsNotNone для
 аргументов с номером карточки и ценой.
 Оформи свое решение в виде файла Python и пришли мне его через час. Спасибо!
+```
+
+Решение
+--------------
+
+Файл - ``test.py``
+
+1. Импортируем нужные библиотеки
+
+```python
+import unittest
+
+import requests
+from bs4 import BeautifulSoup as bs
+```
+
+2. Создаем дочерний класс ``TestParsing`` от класса ``unittest.TestCase``, также константы USER_AGENT и URL
+
+```python
+class TestParsing(unittest.TestCase):
+    USER_AGENT = {'User-agent': 'Mozilla/5.0'}
+    URL = 'https://zakupki.gov.ru/epz/order/extendedsearch/results.html'
+    '?searchString=&morphology=on&search-filter=Дате+размещения&'
+    'pageNumber=1&sortDirection=false&recordsPerPage=_10'
+    '&showLotsInfoHidden=false&savedSearchSettingsIdHidden='
+    '&sortBy=UPDATE_DATE&fz44=on&fz223=on&af=on&ca=on&pc=on&pa=on'
+    '&placingWayList=&selectedLaws=&priceFromGeneral=&priceFromGWS'
+    '=&priceFromUnitGWS=&priceToGeneral=&priceToGWS=&priceToUnitGWS=&'
+    'currencyIdGeneral=-1&publishDateFrom=&publishDateTo=&applSubmissio'
+    'nCloseDateFrom=&applSubmissionCloseDateTo=&customerIdOrg=&custome'
+    'rFz94id=&customerTitle=&okpd2Ids=&okpd2IdsCodes=&gws='
+```
+
+3. Внутри класса ``TestParsing`` создаем тест-фукнцию для проверки статус кода
+
+```python
+def test_status_code(self):
+        response = requests.get(self.URL, headers=self.USER_AGENT)
+        self.assertEqual(response.status_code, 200)
+```
+
+4. Внутри класса ``TestParsing`` создаем тест-функцию для проверки наличия записей
+
+```python
+def test_records(self):
+    response = requests.get(self.URL, headers=self.USER_AGENT)
+    soup = bs(response.text, 'html.parser')
+    blocks_numbers = soup.find_all(
+        'div',
+        class_='registry-entry__header-mid__number'
+    )
+
+    blocks_prices = soup.find_all('div', class_='price-block__value')
+    self.assertIsNotNone(blocks_numbers)
+    self.assertIsNotNone(blocks_prices)
+    self.assertGreater(len(blocks_prices), 0)
 ```
