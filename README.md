@@ -93,7 +93,7 @@ for page in range(2, 101):
     for x, y in zip(block_numbers, blocks_prices):
         data[x.text.strip().split()[-1]] = convert_price(y.text.strip())
 ```
-P.S: Преобразование суммы закупок затруднительно, так как используются элементы красивого оформления. Чтобы правильно преобразовать сумму в число типа float, я использовал функцию ```convert_price```
+P.S: Преобразование суммы закупок затруднительно, так как используются элементы оформления. Чтобы правильно преобразовать сумму в число типа float, я использовал функцию ```convert_price```
 ``` python
 def convert_price(text: str) -> float:
     """This function convert text into the float number"""
