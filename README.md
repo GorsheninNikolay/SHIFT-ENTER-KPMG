@@ -237,3 +237,93 @@ def test_records(self):
     self.assertIsNotNone(blocks_prices)
     self.assertGreater(len(blocks_prices), 0)
 ```
+
+
+Задание 3. Создай базу данных по закупкам и напиши юнит-тест по ее проверке
+-----
+
+Чуть позже ты получил сообщение от руководителя в мессенджере с постановкой финального на сегодня задания.
+
+```
+Привет!
+Спасибо за отлично проделанную работу. Запуск файла с юнит-тестом для программы
+парсинга прошел успешно и без ошибок. Теперь тебе осталось сделать всего одну задачу —
+спроектировать базу данных по закупкам и проверить ее работу при помощи юнит-теста.
+Первым этапом проектирования БД станет создание таблицы cards. Обычно для создания БД
+SQLite в Python используется объект Connection, который создается с помощью функции
+connect библиотеки sqlite3. Далее нужно создать саму таблицу cards, содержащую 2
+колонки — number и amount, в которых находятся номер закупки и начальная цена объекта.
+Для твоего удобства интересующие нас значения уже импортированы с портала госзакупок в
+виде таблицы (см. вложение 3).
+Hints: для добавления данных нужно использовать объект cursor и функцию executemany для
+выборки нескольких значений из БД. Подробно об этом написано в руководстве по SQLite,
+ссылка на которое дана во вкладке «Полезные материалы». Для выборки данных из БД не
+забудь использовать fetchall, а также проверить, что данные действительно выбрались с
+помощью команды print.
+После этого напиши в отдельном Python-файле юнит-тест для проверки работы БД, как ты
+делал это для программы парсинга. Здесь важно написать запрос для выбора первых трех
+строк, а также проверки на успешность, связанные с проверкой того, что значения
+заполнены и не пустые (assertIsNot(x, 0) и assertGreater(x, 0)).
+Как обычно, оформи свое решение в виде папки с файлами (Python-файлы и README).
+Жду твое решение, спасибо за помощь!
+```
+
+Решение. Создание базы данных
+-----
+
+Файл - data_base.py
+
+1. Импортируем библиотеки
+``` python
+import logging
+import sqlite3
+
+import pandas as pd
+```
+2. Задаем конфиг для логгирование
+``` python
+logging.basicConfig(
+    format='%(asctime)s - %(levelname)s - '
+           '%(funcName)s: %(lineno)d - %(message)s',
+    level=logging.DEBUG)
+```
+3. Логгируем запуск, подключаемся/создаем базу данных, устанавлиаем курсор для запросов
+``` python
+logging.debug('Applications has been successfully launched.')
+CONN = sqlite3.connect('./data/cards.db')  # Connect to DataBase
+CURSOR = CONN.cursor()  # Create cursor
+```
+
+4. Создаем таблицу, логгируем результат и сохраняем изменения
+``` python
+CURSOR.execute("""CREATE TABLE IF NOT EXISTS cards(
+        INT NUMBER,
+        REAL AMOUNT);""")  # Create table
+logging.info('DataBase has been successfully created')
+CONN.commit()  # Commit changes
+```
+
+5. Открываем Excel файл с данными и сохраняем все в переменную ```records```
+``` python
+# Open file with data
+data = pd.read_excel(r'./data/cards.xlsx', engine='openpyxl')
+records = []
+
+logging.info('Data has been successfully saved')
+for num, price in zip(data['Number'], data['Amount']):
+    records.append((num, price))
+```
+
+6. Добавляем в базу данных полученную информацию с парсинга, логгируем результат и закрываем курсор
+``` python
+# Add data into the DataBase
+CURSOR.executemany('INSERT INTO cards VALUES(?, ?);', records)
+CONN.commit()
+
+logging.info('DataBase is created. Data has been recorded.')
+CURSOR.close()
+```
+
+
+Решение. Тест базы данных
+-----
